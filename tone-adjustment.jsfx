@@ -1,0 +1,51 @@
+// Tone Adjustment
+//@param 1:sat 'saturation' 0.0 -1 1
+//@param 2:bright 'brightness' 0.0 -1 1
+//@param 3:cont 'contrast' 0.0 -1 1
+ 
+colorspace = 'RGBA';
+ 
+input_info(0, project_w, project_h);
+ 
+gfx_blit(0);
+ 
+#str = "";
+(sat != 0 || bright != 0 || cont != 0) ? (
+  sat = 1 + sat;
+  bright = bright * 255;
+  cont = 2 ^ cont;
+ 
+  sprintf(#str, "");
+ 
+  bright != 0 ? (
+    sprintf(#line, "r += %.6f; g += %.6f; b += %.6f;\n", bright, bright, bright);
+    strcat(#str, #line);
+  );
+ 
+  cont != 0 ? (
+    sprintf(#line, "
+    r = (r - 128) * %.6f + 128;
+    g = (g - 128) * %.6f + 128;
+    b = (b - 128) * %.6f + 128;
+    ", cont, cont, cont);
+    strcat(#str, #line);
+  );
+ 
+  sat != 0 ? (
+    sprintf(#line, "
+    lum = 0.299*r + 0.587*g + 0.114*b;
+    r = lum + (r - lum) * %.6f;
+    g = lum + (g - lum) * %.6f;
+    b = lum + (b - lum) * %.6f;
+    ", sat, sat, sat);
+    strcat(#str, #line);
+  );
+ 
+  strcat(#str, "
+  r = min(max(r, 0), 255);
+  g = min(max(g, 0), 255);
+  b = min(max(b, 0), 255);
+  ");
+ 
+  gfx_evalrect(0, 0, project_w, project_h, #str);
+);
