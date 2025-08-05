@@ -1,0 +1,20 @@
+// Luminance Invert
+//@param 1:amount 'Invert Amount' 1 0 1 0.01
+ 
+colorspace = 'RGBA';
+ 
+input_info(0, project_w, project_h);
+ 
+gfx_blit(0);
+ 
+amount > 0 ? (
+  gfx_evalrect(0, 0, project_w, project_h, "
+    lum = 0.299*r + 0.587*g + 0.114*b;
+    
+    adj = ((255 - lum) - lum) * amount;
+    
+    r = min(max(r + adj, 0), 255);
+    g = min(max(g + adj, 0), 255);
+    b = min(max(b + adj, 0), 255);
+  ");
+);
